@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+{% if todo %}
+<h1 class="page-header">Todo Details</h1>
+
+{%  if current_user.id == todo.user_id: %}
+<p class="small"><a href="{{ url_for('edit_todo', id=todo.id) }}">Edit #{{ todo.id }}</a> </p>
+{%  endif %}
+
+<div class="offset-sm-1 col-sm-10">
+    <h2>{{  todo.title }}</h2>
+
+    <p>{{  todo.description|nl2br }}</p>
+
+    <hr />
+    <h3>Updates</h3>
+    {%  if updates %}
+        {%  for update in updates %}
+            <p><b>{{ update.created }}</b><br />{{ update.comment|nl2br }}</p>
+            {%  if update.changes|length > 0 %}
+                <small>fields changed:</small>
+                <pre>{{  update.changes }}</pre>
+            {% endif %}
+        {%  endfor %}
+    {%  else %}
+        <p>There are no updates to show yet.</p>
+    {%  endif %}
+{% endif %}
+{% endblock %}

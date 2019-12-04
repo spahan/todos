@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+{% from "_formhelper.html" import render_field, trim %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Todos</h1>
+    <form class="needs-validation"
+      action="{{ url_for('edit_todo', id=todo.id) if todo else url_for('edit_todo') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      novalidate>
+        {{ todoform.csrf_token }}
+        <div class="offset-sm-1 col-sm-10">
+            <div class="form-row">
+                <div class="col-sm-5">
+                    <div class="form-row form-group">
+                        {{  render_field(todoform.title) }}
+                    </div>
+
+                    <div class="form-row form-group">
+                        {{  render_field(todoform.description) }}
+                    </div>
+                </div>
+
+                <div class="offset-sm-2 col-sm-5">
+                    <div class="form-row form-group">
+                        {{  render_field(todoform.due_date) }}
+                    </div>
+                    <div class="form-row form-group">
+                        {{  render_field(todoform.priority) }}
+                    </div>
+                    {#
+                    Zukunftsmusik ...
+                    <div class="form-row form-group">
+                        {{  render_field(todoform.parent) }}
+                    </div>
+                    <div class="form-row form-group">
+                        {{  render_field(todoform.dependson) }}
+                    </div>
+                    #}
+                </div>
+            </div>
+            <div class="form-row form-group">
+                {{ render_field(todoform.comment) }}
+            </div>
+        </div>
+
+    <!--
+    unwichtigere Felder rechts neben Title und Description
+
+    | Todo                                                 |
+    | ---------------------------------------------------- |
+    | Title                  |           Due Date          |
+    | Description            |           Priority          |
+    | Description            |           Parent            |
+    | Description            |           Depends On        |
+    | ---------------------------------------------------- |
+    | Save                                                 |
+    | ---------------------------------------------------- |
+
+    -->
+
+        <div class="offset-sm-1 col-sm-4">
+            <div class="form-row form-row">
+                <div class="col-sm-offset-1 col-sm">
+                    <input class="btn btn-lg btn-primary" id="save" name="save" type="submit" value="Save">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock  %}

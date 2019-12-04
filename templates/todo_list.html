@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+{% from "_formhelper.html" import trim %}
+
+{% macro todo(todo, type=none) %}
+    <div class="row">
+        {%  if type != none %}
+            <a href="{{ url_for('view_todo', id=todo.id) }}" class="todo {{ type }}">
+        {%  else %}
+            <a href="{{ url_for('view_todo', id=todo.id) }}" class="todo">
+        {%  endif %}
+            <h3>{{ todo.title }}</h3>
+            <p>Due: {{ todo.due_date|datetime }}</p>
+            <p>{{ todo.description|nl2br }}</p>
+        </a>
+    </div>
+{% endmacro %}
+
+{% block meta %}
+<meta http-equiv="refresh" content="300;">
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Todos</h1>
+
+<div class="row">
+<div class="col-lg-4">
+<h2 style="text-align: center;">pending</h2>
+    {%  for t in pending %}
+    {{ todo(t, 'pending') }}
+    {% endfor %}
+</div>
+
+<div class="col-lg-4">
+<h2 style="text-align: center;">open</h2>
+    {%  for t in open %}
+    {{ todo(t) }}
+    {% endfor %}
+</div>
+
+<div class="col-lg-4">
+<h2 style="text-align: center;">help needed</h2>
+    {%  for t in help_needed %}
+    {{ todo(t, 'help') }}
+    {% endfor %}
+</div>
+</div>
+
+
+{#
+<form method="GET" style="float: left;">
+    {{ filterform.day(**{'onchange': 'this.form.submit()'}) }}
+</form>
+<label style="margin-left: 20px;"><input type="checkbox" id="hideDone" /> hide done</label>
+
+<table class="table table-sm" style="font-size: 0.9rem" id="transportlist">
+    <thead>
+    <tr>
+        <!--
+            id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+            created = db.Column(db.DateTime, default=db.func.current_timestamp())
+            user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+            description = db.Column(db.Text)
+            not_before = db.Column(db.Date)
+            due_date = db.Column(db.Date)
+            priority = db.Column(db.Integer)
+            parent = db.Column(db.Integer, db.ForeignKey('todo.id'))
+            depends_on = db.Column(db.Text)
+            updates = db.relationship('Update', backref='todo', lazy='dynamic')
+        -->
+
+        <th scope="col">#</th>
+        <th scope="col"><i class="fas exclamation-triangle"></i></th>
+        <th scope="col">Due date</th>
+        <th scope="col">Description</th>
+        <th scope="col">not before</th>
+        <th scope="col">Parent</th>
+        <th scope="col">depends on</th>
+        <th scope="col">User</th>
+        <th scope="col">Updates</th>
+        <th scope="col" data-orderable="false"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for transport in transportlist %}
+    <tr class={% if todo.state == 'cancelled' %}
+    "table-secondary" style="text-decoration: line-through;">
+    {% elif todo.state == 'done' %}"table-success">
+    {% elif todo.due_date > today %}"table-danger">
+    {% elif todo.due_date == today %}"table-warning">
+    {% else %}"">
+    {% endif %}
+    <th scope="row"><a href="{{ url_for('show_todo', id=todo.id) }}">{{ todo.id }}</a></th>
+    <td>{% if todo.priority > 2 %}<i class="fas fa-exclamation-triangle"></i>{% endif %}</td>
+    <td class="text-nowrap" data-order="{{ todo.due_date.strftime('%s') }}">{{ todo.due_date | datetime }}</td>
+    <td>{{ trim(todo.description, 50) }}</td>
+    <td>{{ todo.not_before }}</td>
+    <td>{{ todo.parent }}</td>
+    <td>{{ todo.depends_on }}</td>
+    <td>{{ transport.user.login|safe }}</td>
+    <td>{{ todo.updates|length }}</td>
+    <td data-filter="{{ 'closed' if todo.state in ['done', 'cancelled'] }}">
+        {% if not (todo.state in ['done', 'cancelled']) or current_user.role in ['helpdesk', 'admin'] %}
+        <div class="pull-right">
+            <a href="{{ url_for('edit_todo', id=todo.id) }}"
+               class="btn btn-warning"><i class="fas fa-pencil-alt"></i></a>
+        </div>
+        {% endif %}
+        {% if not transport.done and not transport.cancelled and current_user.role in ['helpdesk', 'admin'] %}
+        <div class="pull-right">
+            <a href="{{ url_for('mark_transport', mark='done', id=transport.id) }}"
+               class="btn btn-success"><i class="fas fa-check"></i></a>
+        </div>
+        {% endif %}
+        {% if not transport.done and not transport.cancelled %}
+        <div class="pull-right">
+            <a href="{{ url_for('mark_transport', mark='cancelled', id=transport.id) }}"
+               class="btn btn-danger"><i class="fas fa-times-circle"></i></a>
+        </div>
+        {% endif %}
+    </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    var table;
+
+    $(document).ready(function () {
+        table = $('#transportlist').DataTable( {
+            order: [[2, "asc"]],
+            stateSave: true,
+            responsive: true,
+            columnDefs: [{
+                targets: [2],
+                orderData: [2, 3]
+            }]
+        });
+
+        $('#hideDone').on('change', function() {
+            localStorage.setItem('hideDone', $(this).is(':checked'));
+            if ($(this).is(':checked')) {
+                $.fn.dataTable.ext.search.push(
+                    function(settings, data, dataIndex) {
+                        return data[12] == "open";
+                    });
+            } else {
+                $.fn.dataTable.ext.search.pop();
+            }
+            table.draw()
+        });
+
+        if (localStorage.getItem('hideDone') === "true") {
+            $('#hideDone').click();
+        }
+    });
+</script>
+#}
+{% endblock  %}

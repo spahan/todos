@@ -1,0 +1,22 @@
+.todo {
+    border: 1px solid gray;
+    background: #76D7C4;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+    width: 100%;
+    color: #000000;
+}
+
+a.todo, a.todo:hover, a.todo:active, a.todo:visited, a.todo:checked {
+    color: #000000;
+    text-decoration: none;
+}
+
+.todo.pending {
+    background: #F1948A !important;
+}
+
+.todo.help {
+    background: #F9E79F !important;
+}
