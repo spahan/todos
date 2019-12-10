@@ -1,5 +1,7 @@
 .idea
 __pycache__
 *.db
-*.cfg
 venv
+*.cfg
+uploads/*
+*.egg-info
