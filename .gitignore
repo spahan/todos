@@ -5,3 +5,4 @@ venv
 *.cfg
 uploads/*
 *.egg-info
+.pre-commit-config.yml

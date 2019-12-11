@@ -1,0 +1,5 @@
+[settings]
+line_length=88(venv) root@lisa:~/squirrel# cat .flake8 
+[flake8]
+max-line-length = 180
+exclude = squirrel/orders/migrations/
